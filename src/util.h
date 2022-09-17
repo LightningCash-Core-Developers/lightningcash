@@ -103,7 +103,7 @@ namespace BCLog {
         COINDB      = (1 << 18),
         QT          = (1 << 19),
         LEVELDB     = (1 << 20),
-        HIVE        = (1 << 21),    // LitecoinCash: Hive logging
+        HIVE        = (1 << 21),    // LightningCash: Hive logging
         ALL         = ~(uint32_t)0,
     };
 }

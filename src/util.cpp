@@ -82,8 +82,8 @@
 // Application startup time (used for uptime calculation)
 const int64_t nStartupTime = GetTime();
 
-const char * const BITCOIN_CONF_FILENAME = "litecoincash.conf";
-const char * const BITCOIN_PID_FILENAME = "litecoincashd.pid";
+const char * const BITCOIN_CONF_FILENAME = "lightningcash.conf";
+const char * const BITCOIN_PID_FILENAME = "lightningcashd.pid";
 const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
 
 ArgsManager gArgs;
@@ -558,7 +558,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(nullptr, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "litecoincash";
+    const char* pszModule = "lightningcash";
 #endif
     if (pex)
         return strprintf(
@@ -583,7 +583,7 @@ fs::path GetDefaultDataDir()
     // Unix: ~/.bitcoin
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "LitecoinCash";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "LightningCash";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -593,10 +593,10 @@ fs::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/LitecoinCash";
+    return pathRet / "Library/Application Support/LightningCash";
 #else
     // Unix
-    return pathRet / ".litecoincash";
+    return pathRet / ".lightningcash";
 #endif
 #endif
 }
@@ -945,14 +945,14 @@ int GetNumCores()
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
-    // LitecoinCash: Add a row
+    // LightningCash: Add a row
     std::string strFirstPrefix = strPrefix;    
     strFirstPrefix.replace(strFirstPrefix.find("2011-"), sizeof("2011-")-1, "2018-");        
     std::string strCopyrightHolders = strFirstPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
     
-    // LitecoinCash: Check for untranslated substitution to make sure Litecion Core copyright is not removed by accident
-    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Litecoin Core") == std::string::npos)
-        strCopyrightHolders += "\n" + strPrefix + "The Litecoin Core developers";
+    // LightningCash: Check for untranslated substitution to make sure Litecion Core copyright is not removed by accident
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Lightning Core") == std::string::npos)
+        strCopyrightHolders += "\n" + strPrefix + "The Lightning Core developers";
 
     // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {

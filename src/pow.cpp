@@ -10,29 +10,29 @@
 #include <primitives/block.h>
 #include <uint256.h>
 #include <util.h>
-#include <core_io.h>            // LitecoinCash: Hive
-#include <script/standard.h>    // LitecoinCash: Hive
-#include <base58.h>             // LitecoinCash: Hive
-#include <pubkey.h>             // LitecoinCash: Hive
-#include <hash.h>               // LitecoinCash: Hive
-#include <sync.h>               // LitecoinCash: Hive
-#include <validation.h>         // LitecoinCash: Hive
-#include <utilstrencodings.h>   // LitecoinCash: Hive
+#include <core_io.h>            // LightningCash: Hive
+#include <script/standard.h>    // LightningCash: Hive
+#include <base58.h>             // LightningCash: Hive
+#include <pubkey.h>             // LightningCash: Hive
+#include <hash.h>               // LightningCash: Hive
+#include <sync.h>               // LightningCash: Hive
+#include <validation.h>         // LightningCash: Hive
+#include <utilstrencodings.h>   // LightningCash: Hive
 
-BeePopGraphPoint beePopGraph[1024*40];       // LitecoinCash: Hive
+BeePopGraphPoint beePopGraph[1024*40];       // LightningCash: Hive
 
-// LitecoinCash: DarkGravity V3 (https://github.com/dashpay/dash/blob/master/src/pow.cpp#L82)
+// LightningCash: DarkGravity V3 (https://github.com/dashpay/dash/blob/master/src/pow.cpp#L82)
 // By Evan Duffield <evan@dash.org>
 unsigned int DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimitSHA);
     int64_t nPastBlocks = 24;
 
-    // LitecoinCash: Allow minimum difficulty blocks if we haven't seen a block for ostensibly 10 blocks worth of time
+    // LightningCash: Allow minimum difficulty blocks if we haven't seen a block for ostensibly 10 blocks worth of time
     if (params.fPowAllowMinDifficultyBlocks && pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing * 10)
         return bnPowLimit.GetCompact();
 
-    // LitecoinCash: Make sure we have at least (nPastBlocks + 1) blocks since the fork, otherwise just return powLimitSHA
+    // LightningCash: Make sure we have at least (nPastBlocks + 1) blocks since the fork, otherwise just return powLimitSHA
     if (!pindexLast || pindexLast->nHeight - params.lastScryptBlock < nPastBlocks)
         return bnPowLimit.GetCompact();
 
@@ -40,9 +40,9 @@ unsigned int DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *
     arith_uint256 bnPastTargetAvg;
 
     for (unsigned int nCountBlocks = 1; nCountBlocks <= nPastBlocks; nCountBlocks++) {
-        // LitecoinCash: Hive: Skip over Hivemined blocks; we only want to consider PoW blocks
+        // LightningCash: Hive: Skip over Hivemined blocks; we only want to consider PoW blocks
         while (pindex->GetBlockHeader().IsHiveMined(params)) {
-            //LogPrintf("DarkGravityWave: Skipping hivemined block at %i\n", pindex->nHeight);
+            LogPrintf("DarkGravityWave: Skipping hivemined block at %i\n", pindex->nHeight);
             assert(pindex->pprev); // should never fail
             pindex = pindex->pprev;
         }
@@ -81,82 +81,6 @@ unsigned int DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *
     }
 
     return bnNew.GetCompact();
-}
-
-// LightningCash: DarkGravity V3 (https://github.com/dashpay/dash/blob/master/src/pow.cpp#L82)
-// By Evan Duffield <evan@dash.org>
-// Adjusted from LCC's implementation to use the Scrypt pow limit
-unsigned int DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
-{
-    const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);   // LightningCash: Note we use the Scrypt pow limit here!
-    int64_t nPastBlocks = 24;
-
-    // LightningCash: Testnet only: Allow minimum difficulty blocks if we haven't seen a block for ostensibly 10 blocks worth of time
-    if (params.fPowAllowMinDifficultyBlocks && pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing * 10)
-        return bnPowLimit.GetCompact();
-
-    // LightningCash: Make sure we have at least (nPastBlocks + 1) blocks since the fork, otherwise just return powLimit
-    if (!pindexLast || pindexLast->nHeight - params.lastSHA256Block < nPastBlocks)
-        return bnPowLimit.GetCompact();
-
-    const CBlockIndex *pindex = pindexLast;
-    arith_uint256 bnPastTargetAvg;
-
-    for (unsigned int nCountBlocks = 1; nCountBlocks <= nPastBlocks; nCountBlocks++) {
-        // LitecoinCash: Hive: Skip over Hivemined blocks; we only want to consider PoW blocks
-        while (pindex->GetBlockHeader().IsHiveMined(params)) {
-            //LogPrintf("DarkGravityWave: Skipping hivemined block at %i\n", pindex->nHeight);
-            assert(pindex->pprev); // should never fail
-            pindex = pindex->pprev;
-        }
-
-        arith_uint256 bnTarget = arith_uint256().SetCompact(pindex->nBits);
-        if (nCountBlocks == 1) {
-            bnPastTargetAvg = bnTarget;
-        } else {
-            // NOTE: that's not an average really...
-            bnPastTargetAvg = (bnPastTargetAvg * nCountBlocks + bnTarget) / (nCountBlocks + 1);
-        }
-
-        if(nCountBlocks != nPastBlocks) {
-            assert(pindex->pprev); // should never fail
-            pindex = pindex->pprev;
-        }
-    }
-
-    arith_uint256 bnNew(bnPastTargetAvg);
-
-    int64_t nActualTimespan = pindexLast->GetBlockTime() - pindex->GetBlockTime();
-    // NOTE: is this accurate? nActualTimespan counts it for (nPastBlocks - 1) blocks only...
-    int64_t nTargetTimespan = nPastBlocks * params.nPowTargetSpacing;
-
-    if (nActualTimespan < nTargetTimespan/3)
-        nActualTimespan = nTargetTimespan/3;
-    if (nActualTimespan > nTargetTimespan*3)
-        nActualTimespan = nTargetTimespan*3;
-
-    // Retarget
-    bnNew *= nActualTimespan;
-    bnNew /= nTargetTimespan;
-
-    if (bnNew > bnPowLimit) {
-        bnNew = bnPowLimit;
-    }
-
-    return bnNew.GetCompact();
-}
-
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
-{
-    assert(pindexLast != nullptr);
-
-    
-    if (pindexLast->nHeight >= params.lastSHA256Block)      // LightningCash: If past fork time back to scrypt, use Scypt DGW
-        return DarkGravityWaveScrypt(pindexLast, pblock, params);
-    else if (pindexLast->nHeight >= params.lastScryptBlock) // LitecoinCash: If past fork time, use Dark Gravity Wave
-        return DarkGravityWave(pindexLast, pblock, params);
-    else                                                    // Litecoin
-        return GetNextWorkRequiredLTC(pindexLast, pblock, params);
 }
 
 unsigned int GetNextWorkRequiredLTC(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
@@ -187,7 +111,7 @@ unsigned int GetNextWorkRequiredLTC(const CBlockIndex* pindexLast, const CBlockH
     }
 
     // Go back by what we want to be 14 days worth of blocks
-    // LitecoinCash: This fixes an issue where a 51% attack can change difficulty at will.
+    // LightningCash: This fixes an issue where a 51% attack can change difficulty at will.
     // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
     int blockstogoback = params.DifficultyAdjustmentInterval()-1;
     if ((pindexLast->nHeight+1) != params.DifficultyAdjustmentInterval())
@@ -202,6 +126,19 @@ unsigned int GetNextWorkRequiredLTC(const CBlockIndex* pindexLast, const CBlockH
 
     return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
 }
+
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
+{
+    assert(pindexLast != nullptr);
+
+    // LitecoinCash: If past fork time, use Dark Gravity Wave
+    if (pindexLast->nHeight >= params.lastScryptBlock)
+        return DarkGravityWave(pindexLast, pblock, params);
+    else
+        return GetNextWorkRequiredLTC(pindexLast, pblock, params);
+}
+
+
 
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
 {
@@ -220,7 +157,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     arith_uint256 bnOld;
     bnNew.SetCompact(pindexLast->nBits);
     bnOld = bnNew;
-    // LitecoinCash: intermediate uint256 can overflow by 1 bit
+    // LightningCash: intermediate uint256 can overflow by 1 bit
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     bool fShift = bnNew.bits() > bnPowLimit.bits() - 1;
     if (fShift)
@@ -255,7 +192,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
     return true;
 }
 
-// LitecoinCash: Hive: Get the current Bee Hash Target
+// LightningCash: Hive: Get the current Bee Hash Target
 unsigned int GetNextHiveWorkRequired(const CBlockIndex* pindexLast, const Consensus::Params& params) {
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimitHive);
     const arith_uint256 bnImpossible = 0;
@@ -297,12 +234,12 @@ unsigned int GetNextHiveWorkRequired(const CBlockIndex* pindexLast, const Consen
 	if (beeHashTarget > bnPowLimit)
 		beeHashTarget = bnPowLimit;
 
-    //LogPrintf("GetNextHiveWorkRequired: This target= %s\n", beeHashTarget.ToString());
+    LogPrintf("GetNextHiveWorkRequired: This target= %s\n", beeHashTarget.ToString());
 
     return beeHashTarget.GetCompact();
 }
 
-// LitecoinCash: Hive: Get count of all live and gestating BCTs on the network
+// LightningCash: Hive: Get count of all live and gestating BCTs on the network
 bool GetNetworkHiveInfo(int& immatureBees, int& immatureBCTs, int& matureBees, int& matureBCTs, CAmount& potentialLifespanRewards, const Consensus::Params& consensusParams, bool recalcGraph) {
     int totalBeeLifespan = consensusParams.beeLifespanBlocks + consensusParams.beeGestationBlocks;
     immatureBees = immatureBCTs = matureBees = matureBCTs = 0;
@@ -402,7 +339,7 @@ bool GetNetworkHiveInfo(int& immatureBees, int& immatureBCTs, int& matureBees, i
     return true;
 }
 
-// LitecoinCash: Hive: Check the hive proof for given block
+// LightningCash: Hive: Check the hive proof for given block
 bool CheckHiveProof(const CBlock* pblock, const Consensus::Params& consensusParams) {
     bool verbose = LogAcceptCategory(BCLog::HIVE);
 

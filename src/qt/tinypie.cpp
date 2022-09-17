@@ -1,4 +1,4 @@
-// LitecoinCash: Hexagon pie :)
+// LightningCash: Hexagon pie :)
 
 #include <qt/tinypie.h>
 

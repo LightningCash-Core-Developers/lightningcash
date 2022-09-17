@@ -98,8 +98,8 @@
         <translation>Vhura &amp;URI</translation>
     </message>
     <message>
-        <source>LitecoinCash</source>
-        <translation>Litecoin Cash</translation>
+        <source>LightningCash</source>
+        <translation>Lightning Cash</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -165,8 +165,8 @@
 <context>
     <name>Intro</name>
     <message>
-        <source>LitecoinCash</source>
-        <translation>Litecoin Cash</translation>
+        <source>LightningCash</source>
+        <translation>Lightning Cash</translation>
     </message>
     </context>
 <context>
@@ -194,8 +194,8 @@
         <translation>Marii </translation>
     </message>
     <message>
-        <source>Enter a LitecoinCash address (e.g. %1)</source>
-        <translation>Nyora kero ye LitecoinCash (sekuti %1)</translation>
+        <source>Enter a LightningCash address (e.g. %1)</source>
+        <translation>Nyora kero ye LightningCash (sekuti %1)</translation>
     </message>
     <message>
         <source>%1 d</source>

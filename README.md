@@ -1,33 +1,33 @@
-Litecoin Cash Core integration/staging tree
+Lightning Cash Core integration/staging tree
 ===========================================
 
-What is Litecoin Cash?
+What is Lightning Cash?
 ----------------------
 
-Litecoin Cash is a SHA256 fork of Litecoin. For full details, as well as prebuilt binaries for Windows, Mac and Linux, please visit our website at https://litecoinca.sh.
+Lightning Cash is a SHA256 fork of Lightning. For full details, as well as prebuilt binaries for Windows, Mac and Linux, please visit our website at https://lightningca.sh.
 
-Litecoin Cash Core is the full node software that makes up the backbone of the LCC network.
+Lightning Cash Core is the full node software that makes up the backbone of the LCC network.
 
 License
 -------
 
-Litecoin Cash Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
+Lightning Cash Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see https://opensource.org/licenses/MIT.
 
 Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/litecoincash-project/litecoincash/tags) are created
-regularly to indicate new official, stable release versions of Litecoin Cash Core.
+completely stable. [Tags](https://github.com/lightningcash-project/lightningcash/tags) are created
+regularly to indicate new official, stable release versions of Lightning Cash Core.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The developer [mailing list](https://groups.google.com/forum/#!forum/litecoincash-dev)
+The developer [mailing list](https://groups.google.com/forum/#!forum/lightningcash-dev)
 should be used to discuss complicated or controversial changes before working
 on a patch set.
 
-Developer IRC can be found on Freenode at #litecoincash-dev.
+Developer IRC can be found on Freenode at #lightningcash-dev.
 
 Testing
 -------

@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2019 Antoine Brûlé
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +10,7 @@
 #include <tinyformat.h>
 #include <util.h>
 #include <utilstrencodings.h>
-#include <base58.h> // LitecoinCash: Needed for DecodeDestination()
+#include <base58.h> // LightningCash: Needed for DecodeDestination()
 
 #include <assert.h>
 
@@ -49,8 +50,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";
-    const CScript genesisOutputScript = CScript() << ParseHex("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9") << OP_CHECKSIG;
+    const char* pszTimestamp = "February 14 2019";
+    const CScript genesisOutputScript = CScript() << ParseHex("04079a46bd5319f9838dabadece831534e27a2f5328a287312dbdf1c6be9019b0e5521b1f790a1e3d127de568b799a30b23031ed7c5881d71a83fada6ec1076a73") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
@@ -75,19 +76,19 @@ class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = "main";
-        consensus.nSubsidyHalvingInterval = 840000;
-        consensus.BIP16Height = 218579; // 87afb798a3ad9378fcd56123c81fb31cfd9a8df4719b9774d71730c16315a092 - October 1, 2012
-        consensus.BIP34Height = 710000;
+        consensus.nSubsidyHalvingInterval = 2100000;
+        consensus.BIP16Height = 0; // enforce BIP16 at start !
+        consensus.BIP34Height = 71000000; // never happens
         consensus.BIP34Hash = uint256S("fa09d204a83a768ed5a7c8d441fa62f2043abf420cff1226c7b4329aeb9d51cf");
-        consensus.BIP65Height = 918684; // bab3041e8977e0dc3eeff63fe707b92bde1dd449d8efafb248c27c8264cc311a
-        consensus.BIP66Height = 811879; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
-        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
-        consensus.nPowTargetSpacing = 2.5 * 60;
+        consensus.BIP65Height = 91868400; // never happens
+        consensus.BIP66Height = 81187900; // never happens
+        consensus.powLimit = uint256S("00000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nPowTargetTimespan = 3840; // diff adjusted every 256 blocks before darkgravitywave starts                            0
+        consensus.nPowTargetSpacing = 60; // target of 1 minute per block
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 6048; // 75% of 8064
-        consensus.nMinerConfirmationWindow = 8064; // nPowTargetTimespan / nPowTargetSpacing * 4
+        consensus.nRuleChangeActivationThreshold = 192; // 75% of 256
+        consensus.nMinerConfirmationWindow = 256; // ( nPowTargetTimespan / nPowTargetSpacing ) * 4
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -99,67 +100,63 @@ public:
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1485561600; // January 28, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1517356801; // January 31st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE; // active from the start
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
-        // LitecoinCash: Hive: Deployment
+        // LightningCash: Hive: Deployment
         consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].bit = 7;
-        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nStartTime = 1545782400; // Dec 26, 2018
-        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nTimeout = 1577318400; // Dec 26, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE; // active from the start
+        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; // active from the start
 
-        // LitecoinCash fields
-        consensus.powForkTime = 1518982404;                 // Time of PoW hash method change
-        consensus.lastScryptBlock = 1371111;                // Height of last scrypt block
-        consensus.powLimitSHA = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork
+        // LightningCash fields
+        consensus.powForkTime = 1550149134;                 // Time of PoW hash method change
+        consensus.lastScryptBlock = 0;                // Height of last scrypt block
+        consensus.powLimitSHA = uint256S("00000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork ( for scrypt hasing !!! )
         consensus.slowStartBlocks = 2000;                   // Scale post-fork block reward up over this many blocks
-        consensus.premineAmount = 550000;                   // Premine amount (less than 1% of issued currency at fork time)
-        std::vector<unsigned char> vch = ParseHex("76a914c9f3305556963e2976ccf3348b89a6cc736b6a4e88ac");
-        consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (CashierDaZEsyBQkuvv4c2uPZFx6m2XTgT)
-        consensus.totalMoneySupplyHeight = 6215968;         // Height at which TMS is reached, do not issue rewards past this point
+//        consensus.premineAmount =  550000;                   // Premine amount (1% of max supply)
+//        std::vector<unsigned char> vch = ParseHex("76a9142d291462543ef00046cd195904b8f7442bde02b388ac");
+//        consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (CLagBwF71hqPEKasbmugxBqmyWGFf6ZjMc)
+        consensus.totalMoneySupplyHeight = 6215968;         // Height at which TMS is reached, do not issue rewards past this point... will have to be recalculated...
 
-        // LitecoinCash: Hive: Consensus Fields
+        // LightningCash: Hive: Consensus Fields
         consensus.minBeeCost = 10000;                       // Minimum cost of a bee, used when no more block rewards
         consensus.beeCostFactor = 2500;                     // Bee cost is block_reward/beeCostFactor
         consensus.beeCreationAddress = "CReateLitecoinCashWorkerBeeXYs19YQ";        // Unspendable address for bee creation
-        consensus.hiveCommunityAddress = "CashCFfv8CmdWo6wyMGQWtmQnaToyhgsWr";      // Community fund address
+        consensus.hiveCommunityAddress = "CeckYLfkWnViDxKE1R5vLZaarygLrNgUwa";      // Community fund address
         consensus.communityContribFactor = 10;              // Optionally, donate bct_value/maxCommunityContribFactor to community fund
-        consensus.beeGestationBlocks = 48*24;               // The number of blocks for a new bee to mature
+        consensus.beeGestationBlocks = 48*24;               // The number of blocks for a new bee to mature   romoved here and under 48* for a test...
         consensus.beeLifespanBlocks = 48*24*14;             // The number of blocks a bee lives for after maturation
-        consensus.powLimitHive = uint256S("0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");  // Highest (easiest) bee hash target
-        consensus.minHiveCheckBlock = 1537566;              // Don't bother checking below this height for Hive blocks (not used for consensus/validation checks, just efficiency when looking for potential BCTs)
+        consensus.powLimitHive = uint256S("0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");  // Highest (easiest) bee hash target
+        consensus.minHiveCheckBlock = 1;              // Don't bother checking below this height for Hive blocks (not used for consensus/validation checks, just efficiency when looking for potential BCTs)
         consensus.hiveTargetAdjustAggression = 30;          // Snap speed for bee hash target adjustment EMA
         consensus.hiveBlockSpacingTarget = 2;               // Target Hive block frequency (1 out of this many blocks should be Hivemined)
         consensus.hiveNonceMarker = 192;                    // Nonce marker for hivemined blocks
 
-        // LightningCash: Consensus params
-        consensus.lastSHA256Block = 1580000;                // Last SHA256 block before switching back to Scrypt
-        consensus.powForkTime2 = 9999999999;                // Time of PoW hash method change (NOTE: ONCE LAST SHA BLOCK IS REACHED, FILL IN ITS TIMESTAMP HERE AND RECOMPILE!)
-
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000401b101e2e526d5821");  // LitecoinCash: At LAST_SCRYPT_BLOCK+1
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");  // LightningCash new blockchain
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x00000000de1e4e93317241177b5f1d72fc151c6e76815e9b0be4961dfd309d60"); // LitecoinCash: LAST_SCRYPT_BLOCK+1
+        consensus.defaultAssumeValid = uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af"); // LightningCash: Genesis block
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xc7;
-        pchMessageStart[1] = 0xe4;
-        pchMessageStart[2] = 0xba;
-        pchMessageStart[3] = 0xf8;
-        nDefaultPort = 62458;
+        pchMessageStart[0] = 0xc8;
+        pchMessageStart[1] = 0xe5;
+        pchMessageStart[2] = 0xbb;
+        pchMessageStart[3] = 0xf9;
+        nDefaultPort = 9111;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1317972665, 2084524493, 0x1e0ffff0, 1, 50 * COIN * COIN_SCALE);
+        genesis = CreateGenesisBlock(1550149134, 1610731882, 0x1e0ffff0, 1, 50 * COIN * COIN_SCALE);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2"));
-        assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        assert(consensus.hashGenesisBlock == uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af"));
+        assert(genesis.hashMerkleRoot == uint256S("0x28ce055eab35b9bc48aa0b7d3c2be4bdc911dc646dda709021682a8e88b29e75"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.emplace_back("seeds.litecoinca.sh");
+        //vSeeds.emplace_back("seeds.litecoinca.sh");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,28);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -168,9 +165,11 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
-        bech32_hrp = "lcc";
+        bech32_hrp = "ltnc";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+        //vFixedSeeds.clear(); // no seeds yet ----> now yes
+        //vSeeds.clear();
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
@@ -178,32 +177,16 @@ public:
 
         checkpointData = {
             {
-                {  1500, uint256S("0x841a2965955dd288cfa707a755d05a54e45f8bd476835ec9af4402a2b59a2967")},
-                {  4032, uint256S("0x9ce90e427198fc0ef05e5905ce3503725b80e26afd35a987965fd7e3d9cf0846")},
-                {  8064, uint256S("0xeb984353fc5190f210651f150c40b8a4bab9eeeff0b729fcb3987da694430d70")},
-                { 16128, uint256S("0x602edf1859b7f9a6af809f1d9b0e6cb66fdc1d4d9dcd7a4bec03e12a1ccd153d")},
-                { 23420, uint256S("0xd80fdf9ca81afd0bd2b2a90ac3a9fe547da58f2530ec874e978fce0b5101b507")},
-                { 50000, uint256S("0x69dc37eb029b68f075a5012dcc0419c127672adb4f3a32882b2b3e71d07a20a6")},
-                { 80000, uint256S("0x4fcb7c02f676a300503f49c764a89955a8f920b46a8cbecb4867182ecdb2e90a")},
-                {120000, uint256S("0xbd9d26924f05f6daa7f0155f32828ec89e8e29cee9e7121b026a7a3552ac6131")},
-                {161500, uint256S("0xdbe89880474f4bb4f75c227c77ba1cdc024991123b28b8418dbbf7798471ff43")},
-                {179620, uint256S("0x2ad9c65c990ac00426d18e446e0fd7be2ffa69e9a7dcb28358a50b2b78b9f709")},
-                {240000, uint256S("0x7140d1c4b4c2157ca217ee7636f24c9c73db39c4590c4e6eab2e3ea1555088aa")},
-                {383640, uint256S("0x2b6809f094a9215bafc65eb3f110a35127a34be94b7d0590a096c3f126c6f364")},
-                {409004, uint256S("0x487518d663d9f1fa08611d9395ad74d982b667fbdc0e77e9cf39b4f1355908a3")},
-                {456000, uint256S("0xbf34f71cc6366cd487930d06be22f897e34ca6a40501ac7d401be32456372004")},
-                {638902, uint256S("0x15238656e8ec63d28de29a8c75fcf3a5819afc953dcd9cc45cecc53baec74f38")},
-                {721000, uint256S("0x198a7b4de1df9478e2463bd99d75b714eab235a2e63e741641dc8a759a9840e5")},
-                {1371112, uint256S("0x00000000de1e4e93317241177b5f1d72fc151c6e76815e9b0be4961dfd309d60")},  // LitecoinCash: Premine block
+                {  0, uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af")},
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block db42d00d824950a125f9b08b6b6c282c484781562fa8b3bd29d6ce4a2627c348 (height 1259851).
-            1518985227, // * UNIX timestamp of last known number of transactions
-            21458357,   // * total number of transactions between genesis and that timestamp
+            // Data at genesis block.
+            1550149134, // * UNIX timestamp of last known number of transactions
+            0,   // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0.63        // * estimated number of transactions per second after that timestamp
+            0.0        // * estimated number of transactions per second after that timestamp
         };
     }
 };
@@ -215,19 +198,19 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
-        consensus.nSubsidyHalvingInterval = 840000;
+        consensus.nSubsidyHalvingInterval = 2100000;
         consensus.BIP16Height = 0; // always enforce P2SH BIP16 on regtest
-        consensus.BIP34Height = 146;
+        consensus.BIP34Height = 146000000;
         consensus.BIP34Hash = uint256S("000000042bcd56d6ea0509230b76fe850f0a40a9110f7dba979fd5d707e47c8a"); // Block hash at block 146
-        consensus.BIP65Height = 146;
-        consensus.BIP66Height = 146;
+        consensus.BIP65Height = 146000000;
+        consensus.BIP66Height = 146000000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
-        consensus.nPowTargetSpacing = 2.5 * 60;
+        consensus.nPowTargetTimespan = 240; //
+        consensus.nPowTargetSpacing = 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 30; // Require 75% of last 40 blocks to activate rulechanges
-        consensus.nMinerConfirmationWindow = 40;
+        consensus.nRuleChangeActivationThreshold = 3; // Require 75% of last 40 blocks to activate rulechanges
+        consensus.nMinerConfirmationWindow = 4;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1535587200; // August 30, 2018
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1535587200 + 31536000; // Start + 1 year
@@ -239,25 +222,25 @@ public:
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1535587200; // August 30, 2018
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1535587200 + 31536000; // Start + 1 year
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE; //1535587200; // August 30, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; //1535587200 + 31536000; // Start + 1 year
 
-        // LitecoinCash: Hive: Deployment
+        // LightningCash: Hive: Deployment
         consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].bit = 7;
-        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nStartTime = 1535587200; // August 30, 2018
-        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nTimeout = 1535587200 + 31536000; // Start + 1 year
+        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE; //1549890171; // August 30, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_HIVE].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; //1549890171 + 31536000; // Start + 1 year
 
-        // LitecoinCash fields
-        consensus.powForkTime = 1543765622;                 // Time of PoW hash method change (block 100)
-        consensus.lastScryptBlock = 100;                    // Height of last scrypt block
-        consensus.powLimitSHA = uint256S("000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork
-        consensus.slowStartBlocks = 40;                     // Scale post-fork block reward up over this many blocks
-        consensus.premineAmount = 550000;                   // Premine amount (less than 1% of issued currency at fork time)
-        std::vector<unsigned char> vch = ParseHex("76a91424af51d38b740a6dc2868dfd70fc16d76901e1e088ac");
-        consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (tAGaQ7rk3NE7etu3bU6yAJF3KSKeDhTHry)
+        // LightningCash fields
+        consensus.powForkTime = 1550149134;                 // Time of PoW hash method change (block 100)
+        consensus.lastScryptBlock = 0;                    // Height of last scrypt block
+        consensus.powLimitSHA = uint256S("00000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork
+        consensus.slowStartBlocks = 2000;                     // Scale post-fork block reward up over this many blocks
+ //       consensus.premineAmount = 2100000;                   // Premine amount (less than 1% of issued currency at fork time)
+ //       std::vector<unsigned char> vch = ParseHex("76a91424af51d38b740a6dc2868dfd70fc16d76901e1e088ac"); // havent changed it yet but whatever...
+ //       consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (tAGaQ7rk3NE7etu3bU6yAJF3KSKeDhTHry)
         consensus.totalMoneySupplyHeight = 6215968;         // Height at which TMS is reached, do not issue rewards past this point (Note, not accurate value for testnet)
 
-        // LitecoinCash: Hive: Consensus Fields
+        // LightningCash: Hive: Consensus Fields
         consensus.minBeeCost = 10000;                       // Minimum cost of a bee, used when no more block rewards
         consensus.beeCostFactor = 2500;                     // Bee cost is block_reward/beeCostFactor
         consensus.beeCreationAddress = "tEstNetCreateLCCWorkerBeeXXXYq6T3r";        // Unspendable address for bee creation
@@ -266,35 +249,31 @@ public:
         consensus.beeGestationBlocks = 48*24;               // The number of blocks for a new bee to mature
         consensus.beeLifespanBlocks = 48*24*14;             // The number of blocks a bee lives for after maturation
         consensus.powLimitHive = uint256S("0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");  // Highest (easiest) bee hash target
-        consensus.minHiveCheckBlock = 100;                  // Don't bother checking below this height for Hive blocks (not used for consensus/validation checks, just efficiency when looking for potential BCTs)
-        consensus.hiveTargetAdjustAggression = 30;          // Snap speed for bee hash target adjustment EMA
+        consensus.minHiveCheckBlock = 1;                  // Don't bother checking below this height for Hive blocks (not used for consensus/validation checks, just efficiency when looking for potential BCTs)
+        consensus.hiveTargetAdjustAggression = 12;          // Snap speed for bee hash target adjustment EMA
         consensus.hiveBlockSpacingTarget = 2;               // Target Hive block frequency (1 out of this many blocks should be Hivemined)
         consensus.hiveNonceMarker = 192;                    // Nonce marker for hivemined blocks
-    
-        // LightningCash: Consensus params
-        consensus.lastSHA256Block = 100000;                 // Last SHA256 block before switching back to Scrypt
-        consensus.powForkTime2 = 9999999999;                // Time of PoW hash method change (NOTE: ONCE LAST SHA BLOCK IS REACHED, FILL IN ITS TIMESTAMP HERE AND RECOMPILE!)
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000000014e21bb45");  // LitecoinCash: 179
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");  // LightningCash
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("00000001e6d34f6879ef8abecf6f4eaf7413700e6f6b37cfb0647606736fa7f0"); // LitecoinCash: 157
+        consensus.defaultAssumeValid = uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af"); // LightningCash: 0
 
-        pchMessageStart[0] = 0xb6;
-        pchMessageStart[1] = 0xf5;
-        pchMessageStart[2] = 0xd3;
-        pchMessageStart[3] = 0xcf;
-        nDefaultPort = 62456;
+        pchMessageStart[0] = 0xb8;
+        pchMessageStart[1] = 0xf7;
+        pchMessageStart[2] = 0xd5;
+        pchMessageStart[3] = 0xcd;
+        nDefaultPort = 69111;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1486949366, 293345, 0x1e0ffff0, 1, 50 * COIN * COIN_SCALE);
+        genesis = CreateGenesisBlock(1550149134, 1610731882, 0x1e0ffff0, 1, 50 * COIN * COIN_SCALE);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"));
-        assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        assert(consensus.hashGenesisBlock == uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af"));
+        assert(genesis.hashMerkleRoot == uint256S("0x28ce055eab35b9bc48aa0b7d3c2be4bdc911dc646dda709021682a8e88b29e75"));
 
         vFixedSeeds.clear();
-        vSeeds.emplace_back("testseeds.litecoinca.sh");
+        //vSeeds.emplace_back("testseeds.litecoinca.sh");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,127);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -303,9 +282,11 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "tlcc";
+        bech32_hrp = "tltnc";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
+	//vFixedSeeds.clear(); // No seeds yet... ---->  and now yes !!!!
+        //vSeeds.clear();	
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
@@ -313,16 +294,14 @@ public:
 
         checkpointData = (CCheckpointData) {
             {
-                {100, uint256S("f05a7f0666f3062464d25d9c2a87d6c235d03158ea593595dacd2ed6a22010d1")},    // Last Scrypt block
-                {146, uint256S("000000042bcd56d6ea0509230b76fe850f0a40a9110f7dba979fd5d707e47c8a")},    // BIP34/BIP65/BIP66 activation
-                {157, uint256S("00000001e6d34f6879ef8abecf6f4eaf7413700e6f6b37cfb0647606736fa7f0")}
+                {0, uint256S("0xd949b47c4e17c731f70d91ab127c31f508b43e7a0d87d01192536ecf2d8974af")},
             }
         };
 
-        chainTxData = ChainTxData{  // As at 157
-            1543766363,
-            158,
-            0.01    // Assumed
+        chainTxData = ChainTxData{
+            1550149134,
+            0,
+            0.0
         };
     }
 };
@@ -357,14 +336,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
-        // LitecoinCash fields
-        consensus.powForkTime = 1543765622;                 // Time of PoW hash method change (block 100)
-        consensus.lastScryptBlock = 200;                    // Height of last scrypt block
-        consensus.powLimitSHA = uint256S("000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork
-        consensus.slowStartBlocks = 40;                     // Scale post-fork block reward up over this many blocks
-        consensus.premineAmount = 550000;                   // Premine amount (less than 1% of issued currency at fork time)
-        std::vector<unsigned char> vch = ParseHex("76a91424af51d38b740a6dc2868dfd70fc16d76901e1e088ac");
-        consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (tAGaQ7rk3NE7etu3bU6yAJF3KSKeDhTHry)
+        // LightningCash fields
+        consensus.powForkTime = 1550149134;                 // Time of PoW hash method change (block 100)
+        consensus.lastScryptBlock = 0;                    // Height of last scrypt block
+        consensus.powLimitSHA = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");   // Initial hash target at fork
+        consensus.slowStartBlocks = 2000;                     // Scale post-fork block reward up over this many blocks
+ //       consensus.premineAmount = 2100000;                   // Premine amount (less than 1% of issued currency at fork time)
+ //       std::vector<unsigned char> vch = ParseHex("76a91424af51d38b740a6dc2868dfd70fc16d76901e1e088ac");
+ //       consensus.premineOutputScript = CScript(vch.begin(), vch.end());	// Output script for premine block (tAGaQ7rk3NE7etu3bU6yAJF3KSKeDhTHry)
         consensus.totalMoneySupplyHeight = 6215968;         // Height at which TMS is reached, do not issue rewards past this point (Note, not accurate value for testnet)
         consensus.hiveNonceMarker = 192;                    // Nonce marker for hivemined blocks
 
@@ -374,17 +353,17 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00");
 
-        pchMessageStart[0] = 0xfa;
-        pchMessageStart[1] = 0xbf;
-        pchMessageStart[2] = 0xb5;
-        pchMessageStart[3] = 0xda;
-        nDefaultPort = 19444;
+        pchMessageStart[0] = 0xf9;
+        pchMessageStart[1] = 0xbe;
+        pchMessageStart[2] = 0xb4;
+        pchMessageStart[3] = 0xd9;
+        nDefaultPort = 69444;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 50 * COIN * COIN_SCALE);
+        genesis = CreateGenesisBlock(1550149134, 2, 0x207fffff, 1, 50 * COIN * COIN_SCALE);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"));
-        assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0456083527c41c24bfeba020d5ebe361fb563eceeb42db3710055bf25c472797"));
+        assert(genesis.hashMerkleRoot == uint256S("0x28ce055eab35b9bc48aa0b7d3c2be4bdc911dc646dda709021682a8e88b29e75"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -395,7 +374,7 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9")}
+                {0, uint256S("0456083527c41c24bfeba020d5ebe361fb563eceeb42db3710055bf25c472797")}
             }
         };
 
@@ -412,7 +391,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "rlcc";
+        bech32_hrp = "rltnc";
     }
 };
 

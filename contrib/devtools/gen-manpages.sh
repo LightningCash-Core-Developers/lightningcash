@@ -4,10 +4,10 @@ TOPDIR=${TOPDIR:-$(git rev-parse --show-toplevel)}
 SRCDIR=${SRCDIR:-$TOPDIR/src}
 MANDIR=${MANDIR:-$TOPDIR/doc/man}
 
-LITECOINCASHD=${LITECOINCASHD:-$SRCDIR/litecoincashd}
-LITECOINCASHCLI=${LITECOINCASHCLI:-$SRCDIR/litecoincash-cli}
-LITECOINCASHTX=${LITECOINCASHTX:-$SRCDIR/litecoincash-tx}
-LITECOINCASHQT=${LITECOINCASHQT:-$SRCDIR/qt/litecoincash-qt}
+LITECOINCASHD=${LITECOINCASHD:-$SRCDIR/lightningcashd}
+LITECOINCASHCLI=${LITECOINCASHCLI:-$SRCDIR/lightningcash-cli}
+LITECOINCASHTX=${LITECOINCASHTX:-$SRCDIR/lightningcash-tx}
+LITECOINCASHQT=${LITECOINCASHQT:-$SRCDIR/qt/lightningcash-qt}
 
 [ ! -x $LITECOINCASHD ] && echo "$LITECOINCASHD not found or not executable." && exit 1
 

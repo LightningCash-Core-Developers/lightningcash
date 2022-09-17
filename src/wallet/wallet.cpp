@@ -2606,7 +2606,7 @@ bool CWallet::SignTransaction(CMutableTransaction &tx)
         const CScript& scriptPubKey = mi->second.tx->vout[input.prevout.n].scriptPubKey;
         const CAmount& amount = mi->second.tx->vout[input.prevout.n].nValue;
         SignatureData sigdata;
-        if (!ProduceSignature(TransactionSignatureCreator(this, &txNewConst, nIn, amount, SIGHASH_ALL | SIGHASH_FORKID), scriptPubKey, sigdata)) {	// LitecoinCash: Replay attack protection
+        if (!ProduceSignature(TransactionSignatureCreator(this, &txNewConst, nIn, amount, SIGHASH_ALL), scriptPubKey, sigdata)) {
             return false;
         }
         UpdateTransaction(tx, nIn, sigdata);
@@ -2697,9 +2697,9 @@ OutputType CWallet::TransactionChangeType(OutputType change_type, const std::vec
     return g_address_type;
 }
 
-bool fWalletUnlockHiveMiningOnly = false;  // LitecoinCash: Hive: Unlock for hive mining purposes only.
+bool fWalletUnlockHiveMiningOnly = false;  // LightningCash: Hive: Unlock for hive mining purposes only.
 
-// LitecoinCash: Hive: Return all BCTs known by this wallet, optionally including dead bees and optionally scanning for blocks minted by bees from each BCT
+// LightningCash: Hive: Return all BCTs known by this wallet, optionally including dead bees and optionally scanning for blocks minted by bees from each BCT
 std::vector<CBeeCreationTransactionInfo> CWallet::GetBCTs(bool includeDead, bool scanRewards, const Consensus::Params& consensusParams, int minHoneyConfirmations) {
     std::vector<CBeeCreationTransactionInfo> bcts;
 
@@ -2821,7 +2821,7 @@ std::vector<CBeeCreationTransactionInfo> CWallet::GetBCTs(bool includeDead, bool
     return bcts;
 }
 
-// LitecoinCash: Hive: Create a BCT to gestate given number of bees
+// LightningCash: Hive: Create a BCT to gestate given number of bees
 bool CWallet::CreateBeeTransaction(int beeCount, CWalletTx& wtxNew, CReserveKey& reservekeyChange, CReserveKey& reservekeyHoney, std::string honeyAddress, bool communityContrib, std::string& strFailReason, const Consensus::Params& consensusParams) {
     CBlockIndex* pindexPrev = chainActive.Tip();
     assert(pindexPrev != nullptr);
@@ -3248,7 +3248,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
                 const CScript& scriptPubKey = coin.txout.scriptPubKey;
                 SignatureData sigdata;
 
-                if (!ProduceSignature(TransactionSignatureCreator(this, &txNewConst, nIn, coin.txout.nValue, SIGHASH_ALL | SIGHASH_FORKID), scriptPubKey, sigdata))     // LitecoinCash: Include fork ID in the signature
+                if (!ProduceSignature(TransactionSignatureCreator(this, &txNewConst, nIn, coin.txout.nValue, SIGHASH_ALL), scriptPubKey, sigdata))
                 {
                     strFailReason = _("Signing transaction failed");
                     return false;

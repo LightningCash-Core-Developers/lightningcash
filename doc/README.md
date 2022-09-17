@@ -1,41 +1,41 @@
-LitecoinCash Core
+LightningCash Core
 =============
 
 Setup
 ---------------------
-LitecoinCash Core is the original LitecoinCash client and it builds the backbone of the network. It downloads and, by default, stores the entire history of LitecoinCash transactions (which is currently more than 7 GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
+LightningCash Core is the original LightningCash client and it builds the backbone of the network. It downloads and, by default, stores the entire history of LightningCash transactions (which is currently more than 7 GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download LitecoinCash Core, visit [litecoinca.sh](https://litecoinca.sh).
+To download LightningCash Core, visit [lightningca.sh](https://lightningca.sh).
 
 Running
 ---------------------
-The following are some helpful notes on how to run LitecoinCash on your native platform.
+The following are some helpful notes on how to run LightningCash on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- `bin/litecoincash-qt` (GUI) or
-- `bin/litecoincashd` (headless)
+- `bin/lightningcash-qt` (GUI) or
+- `bin/lightningcashd` (headless)
 
 ### Windows
 
-Unpack the files into a directory, and then run litecoincash-qt.exe.
+Unpack the files into a directory, and then run lightningcash-qt.exe.
 
 ### OS X
 
-Drag LitecoinCash-Core to your applications folder, and then run LitecoinCash-Core.
+Drag LightningCash-Core to your applications folder, and then run LightningCash-Core.
 
 ### Need Help?
 
-* See the documentation at the [LitecoinCash homepage](https://litecoinca.sh/)
+* See the documentation at the [LightningCash homepage](https://lightningca.sh/)
 for help and more information.
-* Ask for help on [#litecoincash](http://webchat.freenode.net?channels=litecoincash) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=litecoincash).
-* Ask for help on the [LitecoinCashTalk](https://litecoincashtalk.io/) forums.
+* Ask for help on [#lightningcash](http://webchat.freenode.net?channels=lightningcash) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=lightningcash).
+* Ask for help on the [LightningCashTalk](https://lightningcashtalk.io/) forums.
 
 Building
 ---------------------
-The following are developer notes on how to build LitecoinCash on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build LightningCash on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
 - [OS X Build Notes](build-osx.md)
@@ -46,7 +46,7 @@ The following are developer notes on how to build LitecoinCash on your native pl
 
 Development
 ---------------------
-The LitecoinCash repo's [root README](/README.md) contains relevant information on the development process and automated testing.
+The LightningCash repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Release Notes](release-notes.md)
@@ -61,8 +61,8 @@ The LitecoinCash repo's [root README](/README.md) contains relevant information 
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* Discuss on the [LitecoinCashTalk](https://litecoincashtalk.io/) forums.
-* Discuss general LitecoinCash development on #litecoincash-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=litecoincash-dev).
+* Discuss on the [LightningCashTalk](https://lightningcashtalk.io/) forums.
+* Discuss general LightningCash development on #lightningcash-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=lightningcash-dev).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

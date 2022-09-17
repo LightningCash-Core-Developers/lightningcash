@@ -44,17 +44,17 @@ from the root of the repository.
 
 **Note**: You only need Berkeley DB if the wallet is enabled (see the section *Disable-Wallet mode* below).
 
-Build LitecoinCash Core
+Build LightningCash Core
 ------------------------
 
-1. Clone the litecoincash source code and cd into `litecoincash`
+1. Clone the lightningcash source code and cd into `lightningcash`
 
-        git clone https://github.com/litecoincash-project/litecoincash
-        cd litecoincash
+        git clone https://github.com/lightningcash-project/lightningcash
+        cd lightningcash
 
-2.  Build litecoincash-core:
+2.  Build lightningcash-core:
 
-    Configure and build the headless litecoincash binaries as well as the GUI (if Qt is found).
+    Configure and build the headless lightningcash binaries as well as the GUI (if Qt is found).
 
     You can disable the GUI build by passing `--without-gui` to configure.
 
@@ -76,44 +76,44 @@ Build LitecoinCash Core
 
     or
 
-        cd ~/litecoincash/src
-        cp litecoincashd /usr/local/bin/
-        cp litecoincash-cli /usr/local/bin/
+        cd ~/lightningcash/src
+        cp lightningcashd /usr/local/bin/
+        cp lightningcash-cli /usr/local/bin/
 
 Running
 -------
 
-LitecoinCash Core is now available at `./src/litecoincashd`
+LightningCash Core is now available at `./src/lightningcashd`
 
 Before running, it's recommended you create an RPC configuration file.
 
-    echo -e "rpcuser=litecoincashrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/LitecoinCash/litecoincash.conf"
+    echo -e "rpcuser=lightningcashrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/LightningCash/lightningcash.conf"
 
-    chmod 600 "/Users/${USER}/Library/Application Support/LitecoinCash/litecoincash.conf"
+    chmod 600 "/Users/${USER}/Library/Application Support/LightningCash/lightningcash.conf"
 
-The first time you run litecoincashd, it will start downloading the blockchain. This process could take several hours.
+The first time you run lightningcashd, it will start downloading the blockchain. This process could take several hours.
 
 You can monitor the download process by looking at the debug.log file:
 
-    tail -f $HOME/Library/Application\ Support/LitecoinCash/debug.log
+    tail -f $HOME/Library/Application\ Support/LightningCash/debug.log
 
 Other commands:
 -------
 
-    ./src/litecoincashd -daemon # Starts the litecoincash daemon.
-    ./src/litecoincash-cli --help # Outputs a list of command-line options.
-    ./src/litecoincash-cli help # Outputs a list of RPC commands when the daemon is running.
+    ./src/lightningcashd -daemon # Starts the lightningcash daemon.
+    ./src/lightningcash-cli --help # Outputs a list of command-line options.
+    ./src/lightningcash-cli help # Outputs a list of RPC commands when the daemon is running.
 
 Using Qt Creator as IDE
 ------------------------
-You can use Qt Creator as an IDE, for litecoincash development.
+You can use Qt Creator as an IDE, for lightningcash development.
 Download and install the community edition of [Qt Creator](https://www.qt.io/download/).
 Uncheck everything except Qt Creator during the installation process.
 
 1. Make sure you installed everything through Homebrew mentioned above
 2. Do a proper ./configure --enable-debug
 3. In Qt Creator do "New Project" -> Import Project -> Import Existing Project
-4. Enter "litecoincash-qt" as project name, enter src/qt as location
+4. Enter "lightningcash-qt" as project name, enter src/qt as location
 5. Leave the file selection as it is
 6. Confirm the "summary page"
 7. In the "Projects" tab select "Manage Kits..."

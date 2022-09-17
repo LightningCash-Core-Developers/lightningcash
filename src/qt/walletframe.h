@@ -71,10 +71,10 @@ public Q_SLOTS:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 
-    // LitecoinCash: Switch to hive page
+    // LightningCash: Switch to hive page
     void gotoHivePage();
 
-    // LitecoinCash: Key import helper
+    // LightningCash: Key import helper
     void importPrivateKey();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */

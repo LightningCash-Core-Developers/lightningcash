@@ -51,30 +51,30 @@ extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& 
 /* Calculate the difficulty for a given block index,
  * or the block index of the given chain.
  */
-// LitecoinCash: Hive: Optional getHiveDifficulty param
+// LightningCash: Hive: Optional getHiveDifficulty param
 double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex, bool getHiveDifficulty = false)
 {
     if (blockindex == nullptr)
     {
         if (chain.Tip() == nullptr)
-            return 1.0;
+            return 1;
         else
             blockindex = chain.Tip();
     }
 
-    // LitecoinCash: Hive: If tip is hivemined and we want PoW, step back one (Hive blocks always follow a PoW block)
+    // LightningCash: Hive: If tip is hivemined and we want PoW, step back one (Hive blocks always follow a PoW block)
     const Consensus::Params& consensusParams = Params().GetConsensus();
     if (!getHiveDifficulty && blockindex->GetBlockHeader().IsHiveMined(consensusParams)) {
         assert (blockindex->pprev);
         blockindex = blockindex->pprev;
     }
 
-    // LitecoinCash: Hive: If tip is PoW and we want hivemined, step back until we find a Hive block
+    // LightningCash: Hive: If tip is PoW and we want hivemined, step back until we find a Hive block
     if (getHiveDifficulty) {
         while (!blockindex->GetBlockHeader().IsHiveMined(consensusParams)) {
             if (!blockindex->pprev || blockindex->nHeight < consensusParams.minHiveCheckBlock) {   // Ran out of blocks without finding a Hive block? Return min target
                 LogPrint(BCLog::HIVE, "GetDifficulty: No hivemined blocks found in history\n");
-                return 1.0;
+                return 1;
             }
 
             blockindex = blockindex->pprev;
@@ -99,7 +99,7 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex, bool ge
     return dDiff;
 }
 
-// LitecoinCash: Hive: Pass through optional getHiveDifficulty param
+// LightningCash: Hive: Pass through optional getHiveDifficulty param
 double GetDifficulty(const CBlockIndex* blockindex, bool getHiveDifficulty)
 {
     return GetDifficulty(chainActive, blockindex, getHiveDifficulty);
@@ -377,7 +377,7 @@ UniValue getdifficulty(const JSONRPCRequest& request)
     return GetDifficulty();
 }
 
-// LitecoinCash: Hive: Get hive difficulty
+// LightningCash: Hive: Get hive difficulty
 UniValue gethivedifficulty(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
@@ -1034,8 +1034,8 @@ UniValue gettxout(const JSONRPCRequest& request)
             "     \"hex\" : \"hex\",        (string) \n"
             "     \"reqSigs\" : n,          (numeric) Number of required signatures\n"
             "     \"type\" : \"pubkeyhash\", (string) The type, eg pubkeyhash\n"
-            "     \"addresses\" : [          (array of string) array of litecoincash addresses\n"
-            "        \"address\"     (string) litecoincash address\n"
+            "     \"addresses\" : [          (array of string) array of lightningcash addresses\n"
+            "        \"address\"     (string) lightningcash address\n"
             "        ,...\n"
             "     ]\n"
             "  },\n"
@@ -1672,7 +1672,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getblockheader",         &getblockheader,         {"blockhash","verbose"} },
     { "blockchain",         "getchaintips",           &getchaintips,           {} },
     { "blockchain",         "getdifficulty",          &getdifficulty,          {} },
-    { "blockchain",         "gethivedifficulty",      &gethivedifficulty,      {} },        // LitecoinCash: Get Hive difficulty
+    { "blockchain",         "gethivedifficulty",      &gethivedifficulty,      {} },        // LightningCash: Get Hive difficulty
     { "blockchain",         "getmempoolancestors",    &getmempoolancestors,    {"txid","verbose"} },
     { "blockchain",         "getmempooldescendants",  &getmempooldescendants,  {"txid","verbose"} },
     { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },

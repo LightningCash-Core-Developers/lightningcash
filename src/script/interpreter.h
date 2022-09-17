@@ -24,7 +24,6 @@ enum
     SIGHASH_ALL = 1,
     SIGHASH_NONE = 2,
     SIGHASH_SINGLE = 3,
-    SIGHASH_FORKID = 0x40,  // LitecoinCash: Fork ID
     SIGHASH_ANYONECANPAY = 0x80,
 };
 
@@ -111,11 +110,7 @@ enum
 
     // Public keys in segregated witness scripts must be compressed
     //
-    SCRIPT_VERIFY_WITNESS_PUBKEYTYPE = (1U << 15),
-
-    // LitecoinCash: Support SIGHASH_FORKID
-    //
-    SCRIPT_ENABLE_SIGHASH_FORKID = (1U << 16),    
+    SCRIPT_VERIFY_WITNESS_PUBKEYTYPE = (1U << 15),    
 };
 
 bool CheckSignatureEncoding(const std::vector<unsigned char> &vchSig, unsigned int flags, ScriptError* serror);

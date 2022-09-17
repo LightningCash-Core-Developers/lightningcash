@@ -17,28 +17,19 @@ uint256 CBlockHeader::GetHash() const
     return SerializeHash(*this);
 }
 
-uint256 CBlockHeader::GetPoWHash() const
+uint256 CBlockHeader::GetPoWHash() const // Removed the " if fork then pow is sha256 " so always scrypt now !
 {
-    // LightningCash: After powForkTime2, the pow hash is Scrypt
-    if (nTime > Params().GetConsensus().powForkTime2) {
-        uint256 thash;
-        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
-        return thash;
-    }
-
-    // LitecoinCash: After powForkTime, the pow hash is sha256
-    if (nTime > Params().GetConsensus().powForkTime)
-        return GetHash();
-    
     uint256 thash;
     scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
     return thash;
 }
 
+
+
 std::string CBlock::ToString() const
 {
     std::stringstream s;
-    // LitecoinCash: Hive: Include type
+    // LightningCash: Hive: Include type
     s << strprintf("CBlock(type=%s, hash=%s, powHash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
         IsHiveMined(Params().GetConsensus()) ? "hive" : "pow",
         GetHash().ToString(),
