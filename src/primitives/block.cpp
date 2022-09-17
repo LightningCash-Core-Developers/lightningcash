@@ -19,6 +19,13 @@ uint256 CBlockHeader::GetHash() const
 
 uint256 CBlockHeader::GetPoWHash() const
 {
+    // LightningCash: After powForkTime2, the pow hash is Scrypt
+    if (nTime > Params().GetConsensus().powForkTime2) {
+        uint256 thash;
+        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
+        return thash;
+    }
+
     // LitecoinCash: After powForkTime, the pow hash is sha256
     if (nTime > Params().GetConsensus().powForkTime)
         return GetHash();

@@ -131,6 +131,10 @@ public:
         consensus.hiveBlockSpacingTarget = 2;               // Target Hive block frequency (1 out of this many blocks should be Hivemined)
         consensus.hiveNonceMarker = 192;                    // Nonce marker for hivemined blocks
 
+        // LightningCash: Consensus params
+        consensus.lastSHA256Block = 1580000;                // Last SHA256 block before switching back to Scrypt
+        consensus.powForkTime2 = 9999999999;                // Time of PoW hash method change (NOTE: ONCE LAST SHA BLOCK IS REACHED, FILL IN ITS TIMESTAMP HERE AND RECOMPILE!)
+
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000401b101e2e526d5821");  // LitecoinCash: At LAST_SCRYPT_BLOCK+1
 
@@ -266,6 +270,10 @@ public:
         consensus.hiveTargetAdjustAggression = 30;          // Snap speed for bee hash target adjustment EMA
         consensus.hiveBlockSpacingTarget = 2;               // Target Hive block frequency (1 out of this many blocks should be Hivemined)
         consensus.hiveNonceMarker = 192;                    // Nonce marker for hivemined blocks
+    
+        // LightningCash: Consensus params
+        consensus.lastSHA256Block = 100000;                 // Last SHA256 block before switching back to Scrypt
+        consensus.powForkTime2 = 9999999999;                // Time of PoW hash method change (NOTE: ONCE LAST SHA BLOCK IS REACHED, FILL IN ITS TIMESTAMP HERE AND RECOMPILE!)
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000000014e21bb45");  // LitecoinCash: 179

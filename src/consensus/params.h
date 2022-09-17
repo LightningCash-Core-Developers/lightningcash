@@ -102,6 +102,10 @@ struct Params {
     int minHiveCheckBlock;              // Don't bother checking below this height for Hive blocks (not used for consensus/validation checks, just efficiency when looking for potential BCTs)
     int hiveTargetAdjustAggression;     // Snap speed for bee hash target adjustment EMA
     int hiveBlockSpacingTarget;         // Target Hive block frequency (1 out of this many blocks should be Hive)
+
+    // LightningCash: Consensus params
+    uint32_t powForkTime2;              // Time of PoW hash method change back to Scrypt
+    int lastSHA256Block;                // Last SHA256 block before switching back to Scrypt
 };
 } // namespace Consensus
 
